@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>O.O</title>
+  <style>
+    :root {
+      --bg: #0b0b0b;
+      --panel: #111214;
+      --panel-2: #16181c;
+      --text: #e8e8e8;
+      --muted: #a9acb2;
+      --accent: #E0E0E0;
+      --danger: #ff4d4d;
+      --border: #22252b;
+      --shadow: 0 10px 30px rgba(0,0,0,0.55);
+      --radius: 14px;
+      --focus: 0 0 0 3px rgba(224, 224, 224, 0.35);
+    }
+
+    /* Page layout */
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .wrap {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 860px;
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: clip;
+    }
+
+    .card-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #0f1012, #0d0e10);
+    }
+
+    .title {
+      margin: 0 0 6px 0;
+      font-size: clamp(20px, 2.8vw, 28px);
+      letter-spacing: 0.2px;
+    }
+
+    .card-body {
+      padding: clamp(18px, 3.2vw, 28px);
+      display: grid;
+      gap: 18px;
+    }
+
+    /* Gate section */
+    .gate {
+      display: grid;
+      gap: 12px;
+      background: #0f1115;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: clamp(14px, 2.6vw, 18px);
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    input[type="date"] {
+      appearance: none;
+      -webkit-appearance: none;
+      background: #0b0d11;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 15px;
+      outline: none;
+      box-shadow: inset 0 0 0 1px transparent;
+      transition: box-shadow .15s ease, border-color .15s ease, background .15s ease;
+    }
+    input[type="date"]:focus {
+      border-color: var(--accent);
+      box-shadow: var(--focus);
+      background: #0a0c10;
+    }
+
+    .btn {
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--accent);
+      color: #1a1a1a;
+      border: 0;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .06s ease, filter .15s ease, box-shadow .15s ease;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .btn:active { transform: translateY(1px); }
+    .btn:focus-visible { outline: none; box-shadow: var(--focus); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .btn-ghost:hover { color: var(--text); }
+
+    .error {
+      display: none;
+      color: var(--danger);
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    /* Message section */
+    .message {
+      display: none;
+      line-height: 1.7;
+      background: #0e1014;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: clamp(16px, 3vw, 22px);
+    }
+
+    .message h2 {
+      margin: 0 0 10px 0;
+      font-size: clamp(18px, 2.4vw, 22px);
+    }
+
+    .message p {
+      margin: 0 0 12px 0;
+      font-size: clamp(14px, 2vw, 16px);
+      color: #d7d7d7;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    /* Responsiveness */
+    @media (max-width: 600px) {
+      .controls { gap: 10px; }
+      .btn, input[type="date"] { flex: 1 1 auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="card" role="main" aria-labelledby="title">
+      <header class="card-header">
+        <h1 id="title" class="title">Enter Your DOB</h1>
+      </header>
+
+      <section class="card-body">
+        <!-- Gating UI -->
+        <div id="gate" class="gate">
+          <div class="controls">
+            <input id="gateDate" name="gateDate" type="date" inputmode="numeric" aria-required="true" />
+            <button id="checkBtn" class="btn" type="button" aria-controls="secret">➡</button>
+            <button id="resetBtn" class="btn btn-ghost" type="button">Reset</button>
+          </div>
+          <p id="errorMsg" class="error" role="alert">Unauthorized</p>
+        </div>
+
+        <!-- Secret Message -->
+        <article id="secret" class="message" aria-live="polite">
+          <h2>Long Message</h2>
+          <p>
+            This is a long, gated message displayed only after selecting the exact unlock date. It sits on a deep black interface for comfort and focus, with generous contrast and spacing for readability across devices. The layout fluidly adapts from small screens to wide desktops for a consistent experience.
+          </p>
+          <p>
+            The dark theme reduces glare, emphasizes content, and offers a cinematic feel while maintaining accessible contrast ratios. The card structure and subtle shadows provide depth without overpowering the text. Interactions are keyboard and screen-reader friendly to support inclusive access.
+          </p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Configuration: required unlock date in ISO (YYYY-MM-DD)
+    const REQUIRED_ISO = "2004-09-21";
+
+    const el = {
+      title: document.getElementById("title"),
+      gate: document.getElementById("gate"),
+      date: document.getElementById("gateDate"),
+      check: document.getElementById("checkBtn"),
+      reset: document.getElementById("resetBtn"),
+      error: document.getElementById("errorMsg"),
+      secret: document.getElementById("secret")
+    };
+
+    function show(elm) {
+      elm.style.display = 'grid';
+    }
+    function hide(elm) {
+      elm.style.display = "none";
+    }
+
+    function validateDate(value) {
+      return value === REQUIRED_ISO;
+    }
+
+    function unlock() {
+      el.title.textContent = "Happy Birthday MOMMYYY";
+      hide(el.error);
+      hide(el.gate);
+      el.secret.style.display = 'block'; // Use 'block' for the article
+    }
+
+    function lock() {
+      el.title.textContent = "Enter Your DOB";
+      hide(el.secret);
+      show(el.gate);
+      show(el.error);
+    }
+
+    function clearAll() {
+      el.title.textContent = "Enter Your DOB";
+      hide(el.error);
+      hide(el.secret);
+      show(el.gate);
+      el.date.value = "";
+      el.date.focus();
+    }
+
+    // Event wiring
+    el.check.addEventListener("click", () => {
+      if (validateDate(el.date.value)) {
+        unlock();
+      } else {
+        lock();
+      }
+    });
+
+    el.date.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        el.check.click();
+      }
+    });
+
+    el.reset.addEventListener("click", clearAll);
+
+  </script>
+</body>
+</html>
