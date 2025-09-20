@@ -171,7 +171,7 @@
   <div class="wrap">
     <main class="card" role="main" aria-labelledby="title">
       <header class="card-header">
-        <h1 id="title" class="title">Enter Your DOB</h1>
+        <h1 id="title" class="title">Password</h1>
       </header>
 
       <section class="card-body">
@@ -223,72 +223,82 @@
     </main>
   </div>
 
-  <script>
-    const REQUIRED_ISO = "2004-09-21";
+    <script>
+        const el = {
+          title: document.getElementById("title"),
+          gate: document.getElementById("gate"),
+          date: document.getElementById("gateDate"),
+          check: document.getElementById("checkBtn"),
+          reset: document.getElementById("resetBtn"),
+          error: document.getElementById("errorMsg"),
+          secret: document.getElementById("secret")
+        };
 
-    const el = {
-      title: document.getElementById("title"),
-      gate: document.getElementById("gate"),
-      date: document.getElementById("gateDate"),
-      check: document.getElementById("checkBtn"),
-      reset: document.getElementById("resetBtn"),
-      error: document.getElementById("errorMsg"),
-      secret: document.getElementById("secret")
-    };
+        function show(elm) {
+          elm.style.display = 'grid';
+        }
 
-    function show(elm) {
-      elm.style.display = 'grid';
-    }
-    function hide(elm) {
-      elm.style.display = "none";
-    }
+        function hide(elm) {
+          elm.style.display = "none";
+        }
 
-    function validateDate(value) {
-      return value === REQUIRED_ISO;
-    }
+        function unlock() {
+          el.title.textContent = "Happy Birthday MOMMYYY";
+          hide(el.error);
+          hide(el.gate);
+          el.secret.style.display = 'block';
+        }
 
-    function unlock() {
-      el.title.textContent = "Happy Birthday MOMMYYY";
-      hide(el.error);
-      hide(el.gate);
-      el.secret.style.display = 'block'; // Use 'block' for the article
-    }
+        function lock() {
+          el.title.textContent = "Enter Your DOB";
+          hide(el.secret);
+          show(el.gate);
+          show(el.error);
+        }
 
-    function lock() {
-      el.title.textContent = "Enter Your DOB";
-      hide(el.secret);
-      show(el.gate);
-      show(el.error);
-    }
+        function clearAll() {
+          el.title.textContent = "Enter Your DOB";
+          hide(el.error);
+          hide(el.secret);
+          show(el.gate);
+          el.date.value = "";
+          el.date.focus();
+        }
 
-    function clearAll() {
-      el.title.textContent = "Enter Your DOB";
-      hide(el.error);
-      hide(el.secret);
-      show(el.gate);
-      el.date.value = "";
-      el.date.focus();
-    }
+        // Event wiring
+        el.check.addEventListener("click", async () => {
+          el.check.disabled = true; // Disable button to prevent multiple clicks
 
-    // Event wiring
-    el.check.addEventListener("click", () => {
-      if (validateDate(el.date.value)) {
-        unlock();
-      } else {
-        lock();
-      }
-    });
+          try {
+            const response = await fetch('/api/checkDate', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ date: el.date.value }),
+            });
 
-    el.date.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        el.check.click();
-      }
-    });
+            if (response.ok) {
+              unlock();
+            } else {
+              lock();
+            }
+          } catch (error) {
+            console.error("An error occurred:", error);
+            lock(); // Lock on network error
+          } finally {
+            el.check.disabled = false; // Re-enable button
+          }
+        });
 
-    el.reset.addEventListener("click", clearAll);
+        el.date.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            el.check.click();
+          }
+        });
 
-  </script>
+        el.reset.addEventListener("click", clearAll);
+    </script>
 </body>
 </html>
-
